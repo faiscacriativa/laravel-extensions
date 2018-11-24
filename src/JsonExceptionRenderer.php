@@ -7,7 +7,7 @@
  * @package  LaravelExtensions
  * @author   Faísca Criativa <developers@faiscacriativa.com.br>
  * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/faiscacriativa/laravel-extensions/tree/master/src/JsonExceptionRenderer.php
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/JsonExceptionRenderer.php
  */
 
 namespace FaiscaCriativa\LaravelExtensions;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @package  LaravelExtensions
  * @author   Faísca Criativa <developers@faiscacriativa.com.br>
  * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/faiscacriativa/laravel-extensions/tree/master/src/JsonExceptionRenderer.php
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/JsonExceptionRenderer.php
  */
 trait JsonExceptionRenderer
 {

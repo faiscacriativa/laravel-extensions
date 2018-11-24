@@ -1,9 +1,31 @@
 <?php
 
+/**
+ * PHP Version 7.2
+ *
+ * @category ServiceProviders
+ * @package  LaravelExtensions
+ * @author   Faísca Criativa <developers@faiscacriativa.com.br>
+ * @license  MIT https://opensource.org/licenses/MIT
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/LaravelExtensionsServiceProvider.php
+ */
+
 namespace FaiscaCriativa\LaravelExtensions;
 
+use Barryvdh\Cors\HandlePreflight;
+use FaiscaCriativa\LaravelExtensions\Http\Middleware\HandleCorsResponse;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Laravel Extensions service provider.
+ *
+ * @category ServiceProviders
+ * @package  LaravelExtensions
+ * @author   Faísca Criativa <developers@faiscacriativa.com.br>
+ * @license  MIT https://opensource.org/licenses/MIT
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/LaravelExtensionsServiceProvider.php
+ */
 class LaravelExtensionsServiceProvider extends ServiceProvider
 {
     /**
@@ -13,14 +35,15 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'faiscacriativa');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'faiscacriativa');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
-
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
+        }
+
+        $kernel = $this->app->make(Kernel::class);
+
+        if ($kernel->hasMiddleware(HandlePreflight::class)) {
+            $kernel->prependMiddleware(HandleCorsResponse::class);
         }
     }
 
@@ -31,24 +54,9 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/laravelextensions.php', 'laravelextensions');
-
-        // Register the service the package provides.
-        $this->app->singleton('laravelextensions', function ($app) {
-            return new LaravelExtensions;
-        });
+        $this->app->register(\Barryvdh\Cors\ServiceProvider::class);
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['laravelextensions'];
-    }
-    
     /**
      * Console-specific booting.
      *
@@ -56,27 +64,9 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
      */
     protected function bootForConsole()
     {
-        // Publishing the configuration file.
-        $this->publishes([
-            __DIR__.'/../config/laravelextensions.php' => config_path('laravelextensions.php'),
-        ], 'laravelextensions.config');
-
-        // Publishing the views.
-        /*$this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/faiscacriativa'),
-        ], 'laravelextensions.views');*/
-
-        // Publishing assets.
-        /*$this->publishes([
-            __DIR__.'/../resources/assets' => public_path('vendor/faiscacriativa'),
-        ], 'laravelextensions.views');*/
-
-        // Publishing the translation files.
-        /*$this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/faiscacriativa'),
-        ], 'laravelextensions.views');*/
-
-        // Registering package commands.
-        // $this->commands([]);
+        // Publishing the CORS configuration file
+        $this->publishes(
+            [__DIR__ . '/../config/cors.php' => config_path('cors.php')]
+        );
     }
 }

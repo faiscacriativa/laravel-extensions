@@ -7,7 +7,7 @@
  * @package  LaravelExtensions
  * @author   Faísca Criativa <developers@faiscacriativa.com.br>
  * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/faiscacriativa/laravel-extensions/tree/master/src/tests/JsonExceptionRenderTest.php
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/tests/JsonExceptionRenderTest.php
  */
 
 namespace FaiscaCriativa\LaravelExtensions\Tests;
@@ -30,7 +30,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @package  LaravelExtensions
  * @author   Faísca Criativa <developers@faiscacriativa.com.br>
  * @license  MIT https://opensource.org/licenses/MIT
- * @link     https://github.com/faiscacriativa/laravel-extensions/tree/master/src/tests/JsonExceptionRenderTest.php
+ * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/tests/JsonExceptionRenderTest.php
  */
 class JsonExceptionRenderTest extends TestCase
 {
