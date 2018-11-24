@@ -1,0 +1,43 @@
+{
+    "name": "faiscacriativa/laravel-extensions",
+    "description": ":description",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Faísca Criativa",
+            "email": "developers@faiscacriativa.com.br",
+            "homepage": "https://faiscacriativa.com.br"
+        }
+    ],
+    "homepage": "https://github.com/faiscacriativa/laravel-extensions",
+    "keywords": ["Laravel", "LaravelExtensions"],
+    "require": {
+        "illuminate/support": "~5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0",
+        "mockery/mockery": "^1.1",
+        "orchestra/testbench": "~3.0",
+        "sempro/phpunit-pretty-print": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "FaiscaCriativa\\LaravelExtensions\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FaiscaCriativa\\LaravelExtensions\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "FaiscaCriativa\\LaravelExtensions\\LaravelExtensionsServiceProvider"
+            ],
+            "aliases": {
+                "LaravelExtensions": "FaiscaCriativa\\LaravelExtensions\\Facades\\LaravelExtensions"
+            }
+        }
+    }
+}
