@@ -126,6 +126,12 @@ class TestCase extends OrchestraTestCase
                             return 'ok';
                         }
                     );
+
+                    $router
+                        ->get(
+                            'api/check-email-availability',
+                            'FaiscaCriativa\LaravelExtensions\Http\Controllers\AsyncValidationController@checkEmailAvailability'
+                        );
                 }
             );
     }
