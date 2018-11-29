@@ -1,6 +1,6 @@
 {
     "name": "faiscacriativa/laravel-extensions",
-    "description": ":description",
+    "description": "Some repetitive code we used to copy between projects.",
     "license": "MIT",
     "authors": [
         {
