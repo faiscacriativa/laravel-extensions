@@ -8,6 +8,9 @@
  * @author   Faísca Criativa <developers@faiscacriativa.com.br>
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/JsonExceptionRenderer.php
+ *
+ * @todo Change category to Traits
+ * @todo Move to the Traits folder
  */
 
 namespace FaiscaCriativa\LaravelExtensions;
@@ -99,12 +102,25 @@ trait JsonExceptionRenderer
      */
     protected function handleValidationException(ValidationException $exception)
     {
+        $errors    = [];
+        $errorsBag = $exception->errors();
+
+        foreach ($errorsBag as $field => $error) {
+            $errorMessage = $error;
+
+            if (is_array($error) and count($error) == 1) {
+                $errorMessage = $error[0];
+            }
+
+            array_push($errors, ['field' => $field, 'message' => $errorMessage]);
+        }
+
         return response()
             ->json(
                 [
                     'error'   => true,
                     'message' => trans('validation.verifyPrompt'),
-                    'data'    => $exception->errors()
+                    'data'    => $errors
                 ],
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
