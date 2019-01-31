@@ -18,6 +18,7 @@ namespace FaiscaCriativa\LaravelExtensions;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -52,6 +53,34 @@ trait JsonExceptionRenderer
         if ($exception instanceof ValidationException) {
             return $this->handleValidationException($exception);
         }
+
+        return $this->handleException($exception);
+    }
+
+    /**
+     * Lida com qualquer exceção.
+     *
+     * @param Exception $exception A exceção disparada.
+     *
+     * @return Response
+     */
+    protected function handleException(Exception $exception)
+    {
+        $responseBody = [
+            'error' => true,
+            'message' => trans('errors.generic_error_message')
+        ];
+
+        if (!App::environment('production')) {
+            $responseBody['message'] = $exception->getMessage();
+            $responseBody['data'] = [
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'stacktrace' => $exception->getTrace()
+            ];
+        }
+
+        return response()->json($responseBody);
     }
 
     /**
