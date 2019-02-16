@@ -9,14 +9,17 @@
  * @license  MIT https://opensource.org/licenses/MIT
  * @link     https://github.com/faiscacriativa/laravel-extensions/blob/master/src/JsonExceptionRenderer.php
  *
- * @todo Change category to Traits
- * @todo Move to the Traits folder
+ * @todo Change category to Traits?
+ * @todo Move to a "Traits" folder?
+ * @todo Add tests to the handleAuthenticationException and handleException methods.
  */
 
 namespace FaiscaCriativa\LaravelExtensions;
 
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
@@ -34,14 +37,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 trait JsonExceptionRenderer
 {
     /**
-     * Processa a exceção como uma resposta no formato JSON.
+     * Process the exception as a JSON formatted response.
      *
-     * @param Exception $exception A exceção disparada.
+     * @param Exception $exception The triggered exception.
      *
      * @return void
      */
     public function renderJsonResponse(Exception $exception)
     {
+        if ($exception instanceof AuthenticationException) {
+            return $this->handleAuthenticationException($exception);
+        }
+
         if ($exception instanceof NotFoundHttpException) {
             return $this->handleNotFoundException($exception);
         }
@@ -58,9 +65,28 @@ trait JsonExceptionRenderer
     }
 
     /**
-     * Lida com qualquer exceção.
+     * Handles the authentication exception.
      *
-     * @param Exception $exception A exceção disparada.
+     * @param AuthenticationException $exception The triggered exception.
+     *
+     * @return Response
+     */
+    protected function handleAuthenticationException(
+        AuthenticationException $exception
+    ) {
+        return response()->json(
+            [
+                'error' => false,
+                'message' => $exception->getMessage()
+            ],
+            Response::HTTP_UNAUTHORIZED
+        );
+    }
+
+    /**
+     * Handles any exception.
+     *
+     * @param Exception $exception The triggered exception.
      *
      * @return Response
      */
@@ -84,28 +110,9 @@ trait JsonExceptionRenderer
     }
 
     /**
-     * Lida com a exceção de rota não encontrada.
+     * Handles the "Model not found" exception.
      *
-     * @param NotFoundException $exception A exceção disparada.
-     *
-     * @return Response
-     */
-    protected function handleNotFoundException(NotFoundHttpException $exception)
-    {
-        return response()
-            ->json(
-                [
-                    'error' => true,
-                    'message' => trans('errors.invalid_endpoint')
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-    }
-
-    /**
-     * Lida com a exceção de "modelo não encontrado".
-     *
-     * @param ModelNotFoundException $exception A exceção disparada.
+     * @param ModelNotFoundException $exception The triggered exception.
      *
      * @return Response
      */
@@ -123,9 +130,28 @@ trait JsonExceptionRenderer
     }
 
     /**
-     * Lida com a exceção de validação.
+     * Handle the "Not found" exception.
      *
-     * @param ValidationException $exception A exceção disparada.
+     * @param NotFoundException $exception The triggered exception.
+     *
+     * @return Response
+     */
+    protected function handleNotFoundException(NotFoundHttpException $exception)
+    {
+        return response()
+            ->json(
+                [
+                    'error' => true,
+                    'message' => trans('errors.invalid_endpoint')
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+    }
+
+    /**
+     * Handles the validation exception.
+     *
+     * @param ValidationException $exception The triggered exception.
      *
      * @return Response
      */

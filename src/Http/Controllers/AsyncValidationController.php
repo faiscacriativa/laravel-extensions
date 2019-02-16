@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Validator;
 class AsyncValidationController extends Controller
 {
     /**
-     * The name of the field that used to store email addresses.
+     * The name of the field used to store email addresses.
      *
      * @var string
      */
