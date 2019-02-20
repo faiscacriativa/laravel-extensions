@@ -106,7 +106,10 @@ trait JsonExceptionRenderer
             ];
         }
 
-        return response()->json($responseBody);
+        return response()->json(
+            $responseBody,
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
     }
 
     /**
