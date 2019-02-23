@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
- * "Extends" the original RegistersUsers traits to be more API-wise.
+ * Extends the original RegistersUsers traits to be more API-wise.
  *
  * @category Auth
  * @package  LaravelExtensions
