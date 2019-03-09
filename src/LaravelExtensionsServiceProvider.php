@@ -13,9 +13,15 @@
 namespace FaiscaCriativa\LaravelExtensions;
 
 use Barryvdh\Cors\HandlePreflight;
+use FaiscaCriativa\LaravelExtensions\Events\TokenCreating as TokenCreatingEvent;
 use FaiscaCriativa\LaravelExtensions\Http\Middleware\HandleCorsResponse;
+use FaiscaCriativa\LaravelExtensions\Listeners\TokenCreating;
+use FaiscaCriativa\LaravelExtensions\Token;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 /**
  * Laravel Extensions service provider.
@@ -45,6 +51,13 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
         if ($kernel->hasMiddleware(HandlePreflight::class)) {
             $kernel->prependMiddleware(HandleCorsResponse::class);
         }
+
+        $loader = AliasLoader::getInstance();
+        $loader->alias('Agent', \Jenssegers\Agent\Facades\Agent::class);
+
+        Passport::useTokenModel(Token::class);
+
+        Event::listen(TokenCreatingEvent::class, TokenCreating::class);
     }
 
     /**

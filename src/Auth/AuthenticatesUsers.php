@@ -14,6 +14,7 @@
 
 namespace FaiscaCriativa\LaravelExtensions\Auth;
 
+use FaiscaCriativa\LaravelExtensions\Token;
 use Illuminate\Foundation\Auth\AuthenticatesUsers as ParentAuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
@@ -37,7 +38,7 @@ trait AuthenticatesUsers
     use HandlesOAuthErrors, ParentAuthenticatesUsers;
 
     /**
-     * Handle a login request to the application.
+     * Handles the login request to the application.
      *
      * @param \Illuminate\Http\Request $request The incoming request.
      *
@@ -58,7 +59,7 @@ trait AuthenticatesUsers
         }
 
         if ($request->wantsJson()) {
-            return $this->issueToken($this->convertRequest($request));
+            return $this->issueToken($this->convertPasswordGrantRequest($request));
         } else if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
         }
@@ -72,13 +73,45 @@ trait AuthenticatesUsers
     }
 
     /**
-     * Converts the request to a Psr7Request.
+     * Log the user out of the application.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        if ($request->wantsJson()) {
+            return $this->revokeToken($request);
+        }
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return $this->loggedOut($request) ?: redirect('/');
+    }
+
+    /**
+     * Handles the token refresh request.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request.
+     *
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function refreshToken(Request $request)
+    {
+        return $this->issueToken($this->convertRefreshGrantRequest($request));
+    }
+
+    /**
+     * Converts the request to a Psr7Request for password token.
      *
      * @param \Illuminate\Http\Request $request The incoming request.
      *
      * @return \Psr\Http\Message\ServerRequestInterface
      */
-    protected function convertRequest(Request $request)
+    protected function convertPasswordGrantRequest(Request $request)
     {
         $request->request->add(
             [
@@ -91,6 +124,40 @@ trait AuthenticatesUsers
         );
 
         return (new DiactorosFactory)->createRequest($request);
+    }
+
+    /**
+     * Converts the request to a Psr7Request for access token refresh.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request.
+     *
+     * @return \Psr\Http\Message\ServerRequestInterface
+     */
+    protected function convertRefreshGrantRequest(Request $request)
+    {
+        $request->request->add(
+            [
+                'grant_type' => 'refresh_token',
+                'client_id' => env('PASSPORT_PASSWORD_CLIENT'),
+                'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
+                'refresh_token' => $this->getRefreshTokenValue($request),
+                'scope' => ''
+            ]
+        );
+
+        return (new DiactorosFactory)->createRequest($request);
+    }
+
+    /**
+     * Get the refresh token value for the OAuth Password Client.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request.
+     *
+     * @return string|null
+     */
+    protected function getRefreshTokenValue(Request $request)
+    {
+        return $request->input('refresh_token');
     }
 
     /**
@@ -129,5 +196,29 @@ trait AuthenticatesUsers
                 );
             }
         );
+    }
+
+    /**
+     * Revokes the token from the user.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function revokeToken(Request $request)
+    {
+        $jti = $request->input('jti');
+
+        $token = Token::find($jti);
+
+        if (!empty($token)) {
+            $token->revoke();
+            $token->delete();
+        }
+
+        return [
+            'error'    => false,
+            'message'  => 'Ok'
+        ];
     }
 }

@@ -21,6 +21,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -47,6 +48,10 @@ trait JsonExceptionRenderer
     {
         if ($exception instanceof AuthenticationException) {
             return $this->handleAuthenticationException($exception);
+        }
+
+        if ($exception instanceof InvalidSignatureException) {
+            return $this->handleInvalidSignatureException($exception);
         }
 
         if ($exception instanceof NotFoundHttpException) {
@@ -76,7 +81,7 @@ trait JsonExceptionRenderer
     ) {
         return response()->json(
             [
-                'error' => false,
+                'error' => true,
                 'message' => $exception->getMessage()
             ],
             Response::HTTP_UNAUTHORIZED
@@ -109,6 +114,25 @@ trait JsonExceptionRenderer
         return response()->json(
             $responseBody,
             Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    /**
+     * Handles Invalid signature exceptions.
+     *
+     * @param InvalidSignatureException $exception The triggered exception.
+     *
+     * @return Response
+     */
+    protected function handleInvalidSignatureException(
+        InvalidSignatureException $exception
+    ) {
+        return response()->json(
+            [
+                'error'   => true,
+                'message' => $exception->getMessage()
+            ],
+            Response::HTTP_FORBIDDEN
         );
     }
 
