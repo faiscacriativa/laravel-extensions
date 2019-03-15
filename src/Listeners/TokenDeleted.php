@@ -18,8 +18,7 @@ class TokenDeleted
     public function handle(TokenDeletedEvent $event)
     {
         DB::table('oauth_refresh_tokens')
-            ->where('access_token_id', $event->id)
-            ->where('user_id', Auth::user()->id)
+            ->where('access_token_id', $event->token->id)
             ->delete();
     }
 }

@@ -14,8 +14,10 @@ namespace FaiscaCriativa\LaravelExtensions;
 
 use Barryvdh\Cors\HandlePreflight;
 use FaiscaCriativa\LaravelExtensions\Events\TokenCreating as TokenCreatingEvent;
+use FaiscaCriativa\LaravelExtensions\Events\TokenDeleted as TokenDeletedEvent;
 use FaiscaCriativa\LaravelExtensions\Http\Middleware\HandleCorsResponse;
 use FaiscaCriativa\LaravelExtensions\Listeners\TokenCreating;
+use FaiscaCriativa\LaravelExtensions\Listeners\TokenDeleted;
 use FaiscaCriativa\LaravelExtensions\Token;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\AliasLoader;
@@ -58,6 +60,7 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
         Passport::useTokenModel(Token::class);
 
         Event::listen(TokenCreatingEvent::class, TokenCreating::class);
+        Event::listen(TokenDeletedEvent::class, TokenDeleted::class);
     }
 
     /**

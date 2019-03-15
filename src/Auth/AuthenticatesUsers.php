@@ -17,6 +17,8 @@ namespace FaiscaCriativa\LaravelExtensions\Auth;
 use FaiscaCriativa\LaravelExtensions\Token;
 use Illuminate\Foundation\Auth\AuthenticatesUsers as ParentAuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
 use League\OAuth2\Server\AuthorizationServer;
 use Psr\Http\Message\ServerRequestInterface;
@@ -199,6 +201,20 @@ trait AuthenticatesUsers
     }
 
     /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        if (request()->wantsJson()) {
+            return Auth::guard('api');
+        }
+
+        return Auth::guard();
+    }
+
+    /**
      * Revokes the token from the user.
      *
      * @param \Illuminate\Http\Request $request The incoming request.
@@ -216,9 +232,12 @@ trait AuthenticatesUsers
             $token->delete();
         }
 
-        return [
-            'error'    => false,
-            'message'  => 'Ok'
-        ];
+        return response()->json(
+            [
+                'error'    => false,
+                'message'  => 'Ok'
+            ],
+            Response::HTTP_OK
+        );
     }
 }

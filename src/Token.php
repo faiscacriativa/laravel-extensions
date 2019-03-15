@@ -2,12 +2,13 @@
 
 namespace FaiscaCriativa\LaravelExtensions;
 
-use FaiscaCriativa\LaravelExtensions\Events\TokenCreating;
+use FaiscaCriativa\LaravelExtensions\Events\TokenCreating as TokenCreatingEvent;
+use FaiscaCriativa\LaravelExtensions\Events\TokenDeleted as TokenDeletedEvent;
 
 class Token extends \Laravel\Passport\Token
 {
     protected $dispatchesEvents = [
-        'creating' => TokenCreating::class,
-        'deleted'  => TokenDeleted::class
+        'creating' => TokenCreatingEvent::class,
+        'deleted'  => TokenDeletedEvent::class
     ];
 }

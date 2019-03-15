@@ -130,7 +130,7 @@ trait JsonExceptionRenderer
         return response()->json(
             [
                 'error'   => true,
-                'message' => $exception->getMessage()
+                'message' => trans('routing.invalid_signature')
             ],
             Response::HTTP_FORBIDDEN
         );

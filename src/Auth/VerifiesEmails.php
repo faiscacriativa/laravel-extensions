@@ -44,7 +44,7 @@ trait VerifiesEmails
                 return response()->json(
                     [
                         'error'   => false,
-                        'message' => 'Ok'
+                        'message' => trans('auth.email.verify.already_verified')
                     ]
                 );
             }
@@ -60,7 +60,7 @@ trait VerifiesEmails
             return response()->json(
                 [
                     'error'   => false,
-                    'message' => 'Ok'
+                    'message' => trans('auth.email.verify.success')
                 ]
             );
         }
@@ -94,7 +94,7 @@ trait VerifiesEmails
             return response()->json(
                 [
                     'error'   => false,
-                    'message' => 'Ok'
+                    'message' => trans('auth.email.resend.success')
                 ]
             );
         }
