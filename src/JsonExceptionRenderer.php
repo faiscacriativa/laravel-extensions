@@ -201,7 +201,7 @@ trait JsonExceptionRenderer
             ->json(
                 [
                     'error'   => true,
-                    'message' => trans('validation.verifyPrompt'),
+                    'message' => trans('validation.verify_prompt'),
                     'data'    => $errors
                 ],
                 Response::HTTP_UNPROCESSABLE_ENTITY
