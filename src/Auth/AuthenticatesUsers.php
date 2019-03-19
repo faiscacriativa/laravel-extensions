@@ -19,8 +19,10 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers as ParentAuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use Laravel\Passport\Http\Controllers\HandlesOAuthErrors;
 use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Zend\Diactoros\Response as Psr7Response;
@@ -239,5 +241,39 @@ trait AuthenticatesUsers
             ],
             Response::HTTP_OK
         );
+    }
+
+    /**
+     * Perform the given callback with exception handling.
+     *
+     * @param  \Closure  $callback
+     * @return \Illuminate\Http\Response
+     */
+    protected function withErrorHandling($callback)
+    {
+        try {
+            return $callback();
+        } catch (OAuthServerException $e) {
+            $this->exceptionHandler()->report($e);
+
+            $response = $this->convertResponse(
+                $e->generateHttpResponse(new Psr7Response)
+            );
+
+            $responseBody = json_decode($response->getContent(), true);
+            $responseBody['message'] = Lang::getFromJson($responseBody['message']);
+
+            $response->setContent(json_encode($responseBody));
+
+            return $response;
+        } catch (Exception $e) {
+            $this->exceptionHandler()->report($e);
+
+            return new Response($this->configuration()->get('app.debug') ? $e->getMessage() : 'Error.', 500);
+        } catch (Throwable $e) {
+            $this->exceptionHandler()->report(new FatalThrowableError($e));
+
+            return new Response($this->configuration()->get('app.debug') ? $e->getMessage() : 'Error.', 500);
+        }
     }
 }
