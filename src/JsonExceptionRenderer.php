@@ -23,6 +23,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -53,12 +54,16 @@ trait JsonExceptionRenderer
             return $this->handleInvalidSignatureException($exception);
         }
 
-        if ($exception instanceof NotFoundHttpException) {
-            return $this->handleNotFoundException($exception);
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            return $this->handleMethodNotAllowedHttpException($exception);
         }
 
         if ($exception instanceof ModelNotFoundException) {
             return $this->handleModelNotFoundException($exception);
+        }
+
+        if ($exception instanceof NotFoundHttpException) {
+            return $this->handleNotFoundException($exception);
         }
 
         if ($exception instanceof ValidationException) {
@@ -133,6 +138,18 @@ trait JsonExceptionRenderer
                 'message' => trans('routing.invalid_signature')
             ],
             Response::HTTP_FORBIDDEN
+        );
+    }
+
+    protected function handleMethodNotAllowedHttpException(
+        MethodNotAllowedHttpException $exception
+    ) {
+        return response()->json(
+            [
+                'error' => true,
+                'message' => trans('errors.method_not_allowed')
+            ],
+            Response::HTTP_METHOD_NOT_ALLOWED
         );
     }
 
