@@ -102,6 +102,7 @@ trait JsonExceptionRenderer
         ];
 
         if (!App::environment('production')) {
+            $responseBody['exception'] = get_class($exception);
             $responseBody['message'] = $exception->getMessage();
             $responseBody['data'] = [
                 'file' => $exception->getFile(),
