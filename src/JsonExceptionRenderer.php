@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -103,7 +104,7 @@ trait JsonExceptionRenderer
     {
         $responseBody = [
             'error' => true,
-            'message' => trans('errors.generic_error_message')
+            'message' => Lang::getFromJson('There was a problem processing your request.\nPlease, try again later.')
         ];
 
         if (!App::environment('production')) {
@@ -135,7 +136,7 @@ trait JsonExceptionRenderer
         return response()->json(
             [
                 'error'   => true,
-                'message' => trans('routing.invalid_signature')
+                'message' => Lang::getFromJson('Invalid signature.')
             ],
             Response::HTTP_FORBIDDEN
         );
@@ -147,7 +148,7 @@ trait JsonExceptionRenderer
         return response()->json(
             [
                 'error' => true,
-                'message' => trans('errors.method_not_allowed')
+                'message' => Lang::getFromJson('Method not allowed.')
             ],
             Response::HTTP_METHOD_NOT_ALLOWED
         );
@@ -167,7 +168,7 @@ trait JsonExceptionRenderer
             ->json(
                 [
                     'error' => true,
-                    'message' => trans('errors.not_found')
+                    'message' => Lang::getFromJson('Not found.')
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -186,7 +187,7 @@ trait JsonExceptionRenderer
             ->json(
                 [
                     'error' => true,
-                    'message' => trans('errors.invalid_endpoint')
+                    'message' => Lang::getFromJson('Invalid endpoint.')
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -218,7 +219,7 @@ trait JsonExceptionRenderer
             ->json(
                 [
                     'error'   => true,
-                    'message' => trans('validation.verify_prompt'),
+                    'message' => Lang::getFromJson('Please, check the input data.'),
                     'data'    => $errors
                 ],
                 Response::HTTP_UNPROCESSABLE_ENTITY

@@ -43,6 +43,8 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadResources();
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
@@ -80,9 +82,33 @@ class LaravelExtensionsServiceProvider extends ServiceProvider
      */
     protected function bootForConsole()
     {
+        // phpcs:disable Generic.Files.LineLength.TooLong
+
         // Publishing the CORS configuration file
         $this->publishes(
-            [__DIR__ . '/../config/cors.php' => config_path('cors.php')]
+            [__DIR__ . '/../config/cors.php' => config_path('cors.php')],
+            'config'
         );
+
+        // Publishing the localization files
+        $this->publishes(
+            [__DIR__ . '/../resources/lang/' => resource_path('lang/vendor/sparkler')],
+            'localization'
+        );
+
+        // phpcs:enable Generic.Files.LineLength.TooLong
+    }
+
+    /**
+     * Load resources.
+     *
+     * @return void
+     */
+    protected function loadResources()
+    {
+        $languagePath = __DIR__ . '/../resources/lang';
+
+        $this->loadJsonTranslationsFrom($languagePath);
+        $this->loadTranslationsFrom($languagePath, 'sparkler');
     }
 }
