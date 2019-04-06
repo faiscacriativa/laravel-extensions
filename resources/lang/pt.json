@@ -4,5 +4,7 @@
   "Method not allowed.": "Método não permitido.",
   "Not found.": "Não encontrado.",
   "Invalid endpoint.": "Extremidade inválida.",
-  "Please, check the input data.": "Por favor, verifique os dados informados."
+  "Please, check the input data.": "Por favor, verifique os dados informados.",
+  "The current password is wrong.": "A senha atual está errada.",
+  "Password changed sucessfully.": "Senha modificada com sucesso."
 }
